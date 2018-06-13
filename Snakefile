@@ -254,7 +254,7 @@ rule meraculous:
             '&> {log}')
 
 #find dmin
-#rule dmin_finder:
+rule dmin_finder:
     input:
         mercount_file = ('output/meraculous/{strain}/{read_set}/k_{k}'
                        '/diplo_{diploid_mode}/meraculous_mercount/mercount.hist')
