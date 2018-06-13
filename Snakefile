@@ -214,7 +214,7 @@ rule meraculous_config:
     input:
         fastq = 'output/{read_set}/Ma-{strain}.fastq.gz'
         directory = ('output/meraculous/{strain}/{read_set}/k_{k}/'
-                  'diplo_{diploid_mode}/')
+                     'diplo_{diploid_mode}')
     threads:
         1
     params:
