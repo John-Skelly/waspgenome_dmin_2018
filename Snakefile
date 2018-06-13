@@ -213,8 +213,8 @@ rule norm:
 rule meraculous_config:
     input:
         fastq = 'output/{read_set}/Ma-{strain}.fastq.gz'
-        directory = ('output/meraculous/{strain}/{read_set}/k_{k}/'
-                     'diplo_{diploid_mode}')
+#        directory = ('output/meraculous/{strain}/{read_set}/k_{k}/'
+#                     'diplo_{diploid_mode}')
     threads:
         1
     params:
@@ -224,7 +224,7 @@ rule meraculous_config:
                 'config.txt'),
     run:
         my_fastq = resolve_path(input.fastq)
-        my_dmin = dmin_writer(input.directory)
+        my_dmin = dmin_writer(output.config)
         my_conf = meraculous_config_string.format(
             my_fastq, wildcards.k, wildcards.diploid_mode, my_dmin, meraculous_threads)
         with open(output.config, 'wt') as f:
