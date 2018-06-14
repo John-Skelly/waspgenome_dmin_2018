@@ -36,18 +36,14 @@ def parse_fasta_path(fasta_path):
             'diploid_mode': path_elements[3]}
 
 def dmin_writer(directory):
-    stripped_path = re.sub('^.+/output/meraculous/(?P<id>.+)/', '\g<id>', directory)
-    print(stripped_path)
+    stripped_path = re.sub('^.*output/meraculous/(?P<id>.*)/.*$', '\g<id>', directory)
     path_elements = stripped_path.split('/')
-    strain = path_elements[2]
-    print(strain)
-    if strain == 'MA3':
-        print("yay!")
-        if os.path.exists(directory + '/meraculous_mercount/dmin.txt'):
-            with open(directory + '/meraculous_mercount/dmin.txt') as f:
+    if path_elements[0] == 'MA3':
+        dmin_filepath = 'output/meraculous/' + stripped_path + '/meraculous_mercount/dmin.txt'
+        if os.path.exists(dmin_filepath):
+            with open(dmin_filepath) as f:
                 return f.read()
         else:
-            print("dmin.txt not found")
             return '0'                
     else:
         return '0'
@@ -103,11 +99,16 @@ busco_targets = [('output/busco/'
 #########
 
 #target
+#rule all:
+#    input:
+#        expand(('output/meraculous/{strain}/{read_set}/k_{k}/diplo_{diploid_mode}/'
+#                'meraculous_final_results/final.scaffolds.fa'),
+#               strain=all_samples, read_set=read_set, k=k, diploid_mode=diploid_mode)
+
 rule all:
     input:
-        expand(('output/meraculous/{strain}/{read_set}/k_{k}/diplo_{diploid_mode}/'
-                'meraculous_final_results/final.scaffolds.fa'),
-               strain=all_samples, read_set=read_set, k=k, diploid_mode=diploid_mode)
+#        "output/meraculous/FR1/norm/k_71/diplo_1/meraculous_final_results/final.scaffolds.fa",
+        "output/meraculous/MA3/trim_decon/k_71/diplo_0/meraculous_final_results/final.scaffolds.fa"
 
 rule kmer_coverage_targets:
     input:
@@ -225,6 +226,7 @@ rule meraculous_config:
     run:
         my_fastq = resolve_path(input.fastq)
         my_dmin = dmin_writer(output.config)
+        print(my_dmin)
         my_conf = meraculous_config_string.format(
             my_fastq, wildcards.k, wildcards.diploid_mode, my_dmin, meraculous_threads)
         with open(output.config, 'wt') as f:
